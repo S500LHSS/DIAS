@@ -646,31 +646,30 @@ HR["menu"]=mBar
 NeuAnlage=False
 wd = os.getcwd()
 print("working directory is ", wd)
-wd = os.getcwd()
-print("working directory is ", wd)
 
 filePath = __file__
-print("This script file path is ", filePath)
+#print("This script file path is ", filePath)
 
 absFilePath = os.path.abspath(__file__)
-print("This script absolute path is ", absFilePath)
+#print("This script absolute path is ", absFilePath)
 
 path, filename = os.path.split(absFilePath)
-print("Script file path is {}, filename is {}".format(path, filename))
-
+print("Programm:{} / {}".format(path, filename))
 SQLVerzeichnis=wd 
 os.chdir("/")     
-dat = os.getcwd()                           #"c:\\py\\Helmut\\"
-DATVerzeichnis=dat                          #"c:\\transfer\\"
+dat = os.getcwd()                          
+DATVerzeichnis=dat                        
 Version=platte.platform()
 print("OS-Version: "+Version)
+print("SQLVerzeichnis: ",SQLVerzeichnis)
+print("DATVerzeichnis: ",DATVerzeichnis)
 ian=Version.count("Window")
 if ian:
-    THRE="c:\\py\\Helmut\\THRE.jpg"
+    THRE=path+"\\THRE.jpg"
     gstrDatenBankName=SQLVerzeichnis+"\\Dateishow.db"
     gstrLogBuchName=SQLVerzeichnis+"\\Dateishow.log"
 else:
-    THRE="c:/py/Helmut/THRE.jpg"
+    THRE=path+"/THRE.jpg"
     gstrDatenBankName=SQLVerzeichnis+"/Dateishow.db"
     gstrLogBuchName=SQLVerzeichnis+"/Dateishow.log"
 
@@ -683,6 +682,7 @@ imageTHRE=Image.open(THRE)
 OpenLogBuch(gstrLogBuchName)
 LogSave("000001",12,"Programm gestartet",gstrLogBuchName)
 DBOpen(gstrDatenBankName)
+print("Datenbank: ",gstrDatenBankName)
 ian=DBNumber_of_Records(gstrDatenBankName)
 if ian==0:
     DBStrukturAnlegen(gstrDatenBankName)
@@ -695,7 +695,7 @@ if ian<100:
    # Datenbank neu füllen 
     NeuAnlage=True
     t1.start()    
-elif ian< 3000:
+elif ian< 5000:
     # Datenbank weiter füllen
     NeuAnlage=False
     t1.start()
