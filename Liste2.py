@@ -529,8 +529,12 @@ def ondouble(x):
 def BildAnzahl(s):
     print("Anzahl: ",s)
 def onenter(e):
+    ian=len(Liste100)
     point=AnzeigeListe[e]
-    name,im=Liste100[point]
+    if point>=ian:
+        name="THRE"
+    else:
+        name,im=Liste100[point]
     NameBild.config(text=name)
 def onleave(e):
     NameBild.config(text="")
@@ -688,7 +692,7 @@ if ian==0:
     DBStrukturAnlegen(gstrDatenBankName)
 t1=FredFillSQL(gstrDatenBankName,5000)
 t2=FredWerteNachtragen(gstrDatenBankName)
-t3=Liste100Nachladen()
+#t3=Liste100Nachladen()
 # DB fuellen in Thread T1 
 # Liste100 füllen in GetBilder
 if ian<100:
@@ -714,7 +718,6 @@ ian=len(AnzeigeListe)
 BildWerte.setpointer=(int(ian/2))
 BildWerte.setfirst=(0)
 BildWerte.setlast=(9)
-
 
 xxlPointer=BildWerte.getpointer()
 ShowBilder(AnzeigeListe)
