@@ -50,10 +50,7 @@ class FredFillSQL(threading.Thread):
                         if ian< maxFiles:
                         # Bildgröße in Pixeln ermitteln, damit nachher die Ecken abgefragt werden können
                             s=root[-1:]
-                            if s=="\\":
-                                dx=root+name
-                            else:
-                                dx=root+"\\"+name
+                            dx=ADD_path_file(root,name)
                             BildWert=b.BildWert(dx,500)
                             BildWert="1234"
                             Bild50= "1234"
@@ -103,10 +100,7 @@ class FredWerteNachtragen(threading.Thread):
         zeilen = cur.fetchall()
         for zeile in zeilen:
             s=zeile[2][-1:]
-            if s=="\\":
-                dx=zeile[2]+zeile[1]
-            else:
-                dx=zeile[2]+"\\"+zeile[1]
+            dx=ADD_path_file(zeile[2],zeile[1])
             Id=zeile[0]
             if zeile[3]=="1234":
                 BildWert=b.BildWert(dx,500)
@@ -246,7 +240,7 @@ def convertToBinaryData(filename):
 def DBNew(gstrDatenBankName):
     SHOW_MESS("Datei angelegt und  geöffnet ! nicht wirklich",gstrLogBuchName)
 def DBAuswahl():
-    filename = askopenfilename(initialdir=SQLVerzeichnis, #"c:\\py\\Helmut",
+    filename = askopenfilename(initialdir=SQLVerzeichnis, 
                                 filetypes = (("Datenbank", "*.db"),("All Files","*.*")),
                                 title = "Datenbank auswählen.")
     if  filename: 
@@ -431,6 +425,18 @@ def on_closing():
         AbortFile(gstrLogBuchName)     
 #--------------------------------------------------------------#
 #Bilder
+def ADD_path_file(p,f):
+    Version=platte.platform()
+    s=p[-1:]
+    ian=Version.count("Window")    
+    if ian > 0:
+        if s=="\\":
+            name=p+f
+        else:    
+            name=p+"\\"+f            
+    else:
+        name=p+"/"+f
+    return name    
 def GetBilder(datenbankname,first,anzahl):
     global Liste100
     #Liste=[]
@@ -448,11 +454,8 @@ def GetBilder(datenbankname,first,anzahl):
             filename = zeile[1]
             typ = filename.split(".")[-1]
             if typ in bilddateiname:
-                s=zeile[2][-1:]
-                if s=="\\":
-                    bildname=zeile[2]+zeile[1]
-                else:
-                    bildname=zeile[2]+"\\"+zeile[1]
+
+                bildname=ADD_path_file(zeile[2],zeile[1])
                 im=Image.open(bildname)  
                 tu=bildname,im
                 Liste100.append(tu)      
@@ -667,15 +670,10 @@ Version=platte.platform()
 print("OS-Version: "+Version)
 print("SQLVerzeichnis: ",SQLVerzeichnis)
 print("DATVerzeichnis: ",DATVerzeichnis)
-ian=Version.count("Window")
-if ian:
-    THRE=path+"\\THRE.jpg"
-    gstrDatenBankName=SQLVerzeichnis+"\\Dateishow.db"
-    gstrLogBuchName=SQLVerzeichnis+"\\Dateishow.log"
-else:
-    THRE=path+"/THRE.jpg"
-    gstrDatenBankName=SQLVerzeichnis+"/Dateishow.db"
-    gstrLogBuchName=SQLVerzeichnis+"/Dateishow.log"
+
+THRE=ADD_path_file(path,"THRE.jpg")
+gstrDatenBankName=ADD_path_file(SQLVerzeichnis,"Dateishow.db")
+gstrLogBuchName=ADD_path_file(SQLVerzeichnis,"Dateishow.log")
 
 globDatenVorhanden= False
 Liste100=[]
