@@ -662,9 +662,10 @@ absFilePath = os.path.abspath(__file__)
 
 path, filename = os.path.split(absFilePath)
 print("Programm:{} / {}".format(path, filename))
-SQLVerzeichnis=wd 
-os.chdir("/")     
-dat = os.getcwd()                          
+SQLVerzeichnis=path 
+#os.chdir("..") 
+#os.chdir("..") 
+dat = path                          
 DATVerzeichnis=dat                        
 Version=platte.platform()
 print("OS-Version: "+Version)
