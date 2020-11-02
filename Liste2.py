@@ -9,7 +9,7 @@ from tkinter import messagebox, PhotoImage, Canvas
 #from tkinter.filedialog import askopenfilename
 #from tkinter.filedialog import asksaveasfilename
 
-#--------------------------------------------------------------#
+#--------------------------------------------------------------#   
 # Klassen, Objekte und Methoden
 class FredFillSQL(threading.Thread):
     def __init__(self,datenbankname,maxfiles):
