@@ -10,8 +10,7 @@ from tkinter import filedialog
 from tkinter.filedialog import askopenfilename
 from tkinter.filedialog import asksaveasfilename
 from tkinter.filedialog import askdirectory
-#--------------------------------------------------------------#   
-# Klassen, Objekte und Methoden
+# Klassen, Objekte ...  #--------------------------------------------------------------#    
 class FredFillSQL(threading.Thread):
     def __init__(self,datenbankname,maxfiles):
         threading.Thread.__init__(self)
@@ -118,6 +117,27 @@ class FredWerteNachtragen(threading.Thread):
         con.close()
         print("Stopp Fred2:",FredId)
         return ian
+class Dias(threading.Thread):
+    def __init__(self,nr):
+        threading.Thread.__init__(self)
+        self.nr=nr
+        self.swaiting=3
+    def run(self):
+        global Liste100
+        global imageTHRE
+        global xxl
+        print(self.nr)
+        FredId=threading.get_ident()
+        print("Start Fred3:",FredId)
+        nr=self.nr
+        while(True):
+            bild,im=Liste100[nr]
+            xxl.ChangeBild(fr3,500,bild,im)
+            time.sleep(2)
+            nr+=1
+            if nr==len(Liste100)-1:
+                nr=0
+
 class Glos:
     def __init__(self):
         self.first=0
@@ -225,13 +245,9 @@ class BildaufCanvas:
         imnew = im.resize(newsize)
         self.canvas.image=ImageTk.PhotoImage(imnew)                                 # Bild mit neuen Maßen wird mit der Leinwand = Canvas verbunden
         bild=self.canvas.create_image( 0,0, image=self.canvas.image, anchor='nw')   # Bild wird angezeigt
-    def DiaShow(self,frame,baseheight,liste):
-        print(liste)
     def deleteBild(self):
         self.canvas.pack_forget()
-        #--------------------------------------------------------------#
-
-#SQLITE3 function    
+#SQLITE3 function       #--------------------------------------------------------------#    
 def convertToBinaryData(filename):
     #Convert digital data to binary format
     with open(filename, 'rb') as file:
@@ -288,7 +304,6 @@ def DBStrukturAnlegen(datenbankname):
         SHOW_MESS("Dateibank geöffnet, aber leer",gstrLogBuchName)
     cur.close()    
     return ret        
-
 def DBFuellen(datenbankname,DATVerzeichnis,maxFiles):
     datenbankname = datenbankname
     NeuAnlage=True
@@ -308,7 +323,7 @@ def SaveAndExit(gstrLogBuchName):
         HR.after(3*1000, HR.quit)
     except:
         SHOW_ERR("Keine Daten eingelesen!",gstrLogBuchName)
-
+# Anwendumgen           #--------------------------------------------------------------#
 def showDaten():
     print(ext.get())
 def RunDubletten(datenbankname,AnzeigeListe):
@@ -348,19 +363,15 @@ def RunDubletten(datenbankname,AnzeigeListe):
     return AnzeigeListe
 def RunJahr():
     print("Berechne Jahr")
-def diashow(g):
+def DiaShow(nr):
     # Alle Dateien anzeigen
-    Anzeigeliste=AnzeigeListeRight(AnzeigeListe,1)
-    ShowBilder(AnzeigeListe)
-    time.sleep(3)
-    Anzeigeliste=AnzeigeListeRight(AnzeigeListe,1)
-    ShowBilder(AnzeigeListe)
-    Anzeigeliste=AnzeigeListeRight(AnzeigeListe,1)
-    ShowBilder(AnzeigeListe)
-    return AnzeigeListe
+    if t3.is_alive():
+        print("run")
+    else:
+        print("not run")
+        t3.start()
 
-#--------------------------------------------------------------#
-#  Logbuch
+#  Logbuch              #--------------------------------------------------------------#
 def SHOW_MESS(strM,gstrLogBuchName):
     LogSave("000000","00", strM,gstrLogBuchName)
     FrameMessageZeile["text"]=strM
@@ -423,12 +434,10 @@ def on_closing():
             AbortFile(gstrLogBuchName)
     else:
         AbortFile(gstrLogBuchName)     
-#--------------------------------------------------------------#
-#Bilder
+#Bilder                 #--------------------------------------------------------------#
 def ImagePath(Dir):
     ImageDir=filedialog.askdirectory( initialdir=Dir)
     return ImageDir
-
 def ADD_path_file(p,f):
     Version=platte.platform()
     s=p[-1:]
@@ -468,8 +477,7 @@ def GetBilder(datenbankname,first,anzahl):
     con.close()
     #print(Liste100)
     return 
-
-# BildFunktionen
+# BildFunktionen        #--------------------------------------------------------------#
 def AnzeigeListeRight(AnzeigeListe,anz):
     for i in range(anz): 
         ian=len(Liste100)
@@ -518,13 +526,20 @@ def Bild1Left(g,anz):
     AnzeigeListeLeft(AnzeigeListe,anz)
     print(AnzeigeListe)
     ChangeBilder(AnzeigeListe)
-
 def Bild1Right(g,anz):
     #xxlPointer=AnzeigeListe[4]
     AnzeigeListeRight(AnzeigeListe,anz)
     print(AnzeigeListe)
     ChangeBilder(AnzeigeListe)
     Liste100Nachladen()
+def BildAnzahl(s):
+    print("Anzahl: ",s)
+def Liste100Nachladen():
+    print("Starte Nachladen noch programmieren")
+    time.sleep(0.1)
+    #print("Ende Nachladen noch programmieren")
+    return
+# Bindings              #--------------------------------------------------------------#
 def ondouble(x):
     diff=x-4
     if  diff > 0:
@@ -533,8 +548,6 @@ def ondouble(x):
         Bild1Left(AnzeigeListe,-diff)
     ChangeBilder(AnzeigeListe)
     print(x,diff)
-def BildAnzahl(s):
-    print("Anzahl: ",s)
 def onenter(e):
     ian=len(Liste100)
     point=AnzeigeListe[e]
@@ -545,13 +558,7 @@ def onenter(e):
     NameBild.config(text=name)
 def onleave(e):
     NameBild.config(text="")
-def Liste100Nachladen():
-    print("Starte Nachladen noch programmieren")
-    time.sleep(0.1)
-    #print("Ende Nachladen noch programmieren")
-    return
     
-#--------------------------------------------------------------#
 #--------------------------------------------------------------#   
 # 
 #  M A I N
@@ -637,7 +644,7 @@ mH1.add_command(label="Logbuch anzeigen",command=lambda:ShowLogBuch(gstrLogBuchN
 mH1.add_command(label="Logbuch löschen",command=lambda:DeleteLogBuch(gstrLogBuchName))
 
 mH2.add_command(label="Daten anzeigen",command=lambda:(ShowBilder(AnzeigeListe)))
-mH2.add_command(label="Diashow",command=lambda:xxl.DiaShow(fr3,500,AnzeigeListe))
+mH2.add_command(label="Diashow",command=lambda:DiaShow(0))
 
 mH3.add_command(label="Doppelte Bilder",command=lambda:RunDubletten(gstrDatenBankName,AnzeigeListe))
 mH3.add_command(label="Verbrauch letztes Jahr",command=RunJahr)
@@ -697,6 +704,7 @@ if ian==0:
     DBStrukturAnlegen(gstrDatenBankName)
 t1=FredFillSQL(gstrDatenBankName,5000)
 t2=FredWerteNachtragen(gstrDatenBankName)
+t3=Dias(0)
 # DB fuellen in Thread T1 
 # Liste100 füllen in GetBilder
 if ian<100:
