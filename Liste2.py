@@ -1,14 +1,15 @@
 import threading
 import sqlite3 as lite
-import tkinter ,tkinter.scrolledtext
 import os, shutil, sys, time
 import  platform as platte
-from PIL import ImageTk, Image
-from tkinter import messagebox, PhotoImage, Canvas
-#from tkinter import tkFileDialog
-#from tkinter.filedialog import askopenfilename
-#from tkinter.filedialog import asksaveasfilename
 
+from PIL import ImageTk, Image
+import tkinter ,tkinter.scrolledtext
+from tkinter import messagebox, PhotoImage, Canvas
+from tkinter import filedialog
+from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import asksaveasfilename
+from tkinter.filedialog import askdirectory
 #--------------------------------------------------------------#   
 # Klassen, Objekte und Methoden
 class FredFillSQL(threading.Thread):
@@ -424,6 +425,10 @@ def on_closing():
         AbortFile(gstrLogBuchName)     
 #--------------------------------------------------------------#
 #Bilder
+def ImagePath(Dir):
+    ImageDir=filedialog.askdirectory( initialdir=Dir)
+    return ImageDir
+
 def ADD_path_file(p,f):
     Version=platte.platform()
     s=p[-1:]
@@ -456,7 +461,7 @@ def GetBilder(datenbankname,first,anzahl):
                 bildname=ADD_path_file(zeile[2],zeile[1])
                 im=Image.open(bildname)  
                 tu=bildname,im
-                if ian < 9:
+                if ian < 10:
                     Liste100[ian-1]=tu
                 else:
                     Liste100.append(tu)
@@ -541,9 +546,9 @@ def onenter(e):
 def onleave(e):
     NameBild.config(text="")
 def Liste100Nachladen():
-    print("Starte Nachladen")
-    time.sleep(0.5)
-    print("Ende Nachladen")
+    print("Starte Nachladen noch programmieren")
+    time.sleep(0.1)
+    #print("Ende Nachladen noch programmieren")
     return
     
 #--------------------------------------------------------------#
@@ -663,9 +668,8 @@ path, filename = os.path.split(absFilePath)
 print("Programm:{} / {}".format(path, filename))
 SQLVerzeichnis=path 
 #os.chdir("..") 
-#os.chdir("..") 
-dat = path                          
-DATVerzeichnis=dat                        
+
+DATVerzeichnis=ImagePath(path)                          
 Version=platte.platform()
 print("OS-Version: "+Version)
 print("SQLVerzeichnis: ",SQLVerzeichnis)
@@ -677,9 +681,9 @@ gstrLogBuchName=ADD_path_file(SQLVerzeichnis,"Dateishow.log")
 THRE=ADD_path_file(path,"THRE.jpg")
 THREim=Image.open(THRE)
 tu=THRE,THREim
+
 Liste100=[]
 Liste100=[tu for i in range(0,9)]
-
 BildWerte=Glos()
 xx={}
 HR.iconbitmap() #SQLVerzeichnis+"icon.ico")
