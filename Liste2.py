@@ -56,7 +56,6 @@ class FredFillSQL(threading.Thread):
                             Bild50= "1234"
                             ian+=1
                             if (ian%20)==0:
-                                
                                 time.sleep(self.swaiting)
                                 if self.swaiting < 0.5:
                                     self.swaiting+=0.1
@@ -454,11 +453,13 @@ def GetBilder(datenbankname,first,anzahl):
             filename = zeile[1]
             typ = filename.split(".")[-1]
             if typ in bilddateiname:
-
                 bildname=ADD_path_file(zeile[2],zeile[1])
                 im=Image.open(bildname)  
                 tu=bildname,im
-                Liste100.append(tu)      
+                if ian < 9:
+                    Liste100[ian-1]=tu
+                else:
+                    Liste100.append(tu)
     con.close()
     #print(Liste100)
     return 
@@ -468,20 +469,20 @@ def AnzeigeListeRight(AnzeigeListe,anz):
     for i in range(anz): 
         ian=len(Liste100)
         i=AnzeigeListe[len(AnzeigeListe)-1]
-        if i < ian:
+        if i < ian+1:
             del AnzeigeListe[0]
             AnzeigeListe.append(i+1)
     return AnzeigeListe
 def AnzeigeListeLeft(AnzeigeListe,anz):
     for i in range(anz):
         i=AnzeigeListe[0]
-        if i>0:
+        if i>-4:
             del AnzeigeListe[len(AnzeigeListe)-1]
             AnzeigeListe[:0]=[i-1]
     #print("Left",i,AnzeigeListe)
 def ShowBilder(AnzeigeListe):
     ian1=len(Liste100)
-    mitte=min(4,ian1-1)
+    mitte=4
     xxlPointer=AnzeigeListe[mitte]
     bild,im=Liste100[xxlPointer]
     xxl.ShowBild(fr3,500,bild,im,xxlPointer)
@@ -494,7 +495,7 @@ def ShowBilder(AnzeigeListe):
         xx[s].ShowBild(fr5,50,bild,im,i)
 def ChangeBilder(AnzeigeListe):
     global imageTHRE
-    ian=len(AnzeigeListe)
+    ian1=len(AnzeigeListe)
     mitte=4
     xxlPointer=AnzeigeListe[mitte]
     bild,im=Liste100[xxlPointer]
@@ -503,20 +504,18 @@ def ChangeBilder(AnzeigeListe):
         s="b"+str(i)
         j=AnzeigeListe[i]     
         if (j < 0) or (j>=len(Liste100)) :
-
             xx[s].ChangeBild(fr5,50,"",imageTHRE)
         else: 
             bild,im=Liste100[j]
             xx[s].ChangeBild(fr5,50,bild,im)
-
 def Bild1Left(g,anz):
-    xxlPointer=AnzeigeListe[4]
+    #xxlPointer=AnzeigeListe[4]
     AnzeigeListeLeft(AnzeigeListe,anz)
     print(AnzeigeListe)
     ChangeBilder(AnzeigeListe)
 
 def Bild1Right(g,anz):
-    xxlPointer=AnzeigeListe[4]
+    #xxlPointer=AnzeigeListe[4]
     AnzeigeListeRight(AnzeigeListe,anz)
     print(AnzeigeListe)
     ChangeBilder(AnzeigeListe)
@@ -672,12 +671,15 @@ print("OS-Version: "+Version)
 print("SQLVerzeichnis: ",SQLVerzeichnis)
 print("DATVerzeichnis: ",DATVerzeichnis)
 
-THRE=ADD_path_file(path,"THRE.jpg")
 gstrDatenBankName=ADD_path_file(SQLVerzeichnis,"Dateishow.db")
 gstrLogBuchName=ADD_path_file(SQLVerzeichnis,"Dateishow.log")
 
-globDatenVorhanden= False
+THRE=ADD_path_file(path,"THRE.jpg")
+THREim=Image.open(THRE)
+tu=THRE,THREim
 Liste100=[]
+Liste100=[tu for i in range(0,9)]
+
 BildWerte=Glos()
 xx={}
 HR.iconbitmap() #SQLVerzeichnis+"icon.ico")
@@ -691,7 +693,6 @@ if ian==0:
     DBStrukturAnlegen(gstrDatenBankName)
 t1=FredFillSQL(gstrDatenBankName,5000)
 t2=FredWerteNachtragen(gstrDatenBankName)
-#t3=Liste100Nachladen()
 # DB fuellen in Thread T1 
 # Liste100 füllen in GetBilder
 if ian<100:
