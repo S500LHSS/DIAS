@@ -121,11 +121,11 @@ class Dias(threading.Thread):
     def __init__(self,nr):
         threading.Thread.__init__(self)
         self.nr=nr
-        self.swaiting=3
     def run(self):
         global Liste100
         global imageTHRE
         global xxl
+        global twait
         print(self.nr)
         FredId=threading.get_ident()
         print("Start Fred3:",FredId)
@@ -133,7 +133,7 @@ class Dias(threading.Thread):
         while(True):
             bild,im=Liste100[nr]
             xxl.ChangeBild(fr3,500,bild,im)
-            time.sleep(2)
+            time.sleep(twait)
             nr+=1
             if nr==len(Liste100)-1:
                 nr=0
@@ -365,6 +365,7 @@ def RunJahr():
     print("Berechne Jahr")
 def DiaShow(nr):
     # Alle Dateien anzeigen
+    Regler.pack(expand=1,fill="x",side="left")
     if t3.is_alive():
         print("run")
     else:
@@ -532,8 +533,6 @@ def Bild1Right(g,anz):
     print(AnzeigeListe)
     ChangeBilder(AnzeigeListe)
     Liste100Nachladen()
-def BildAnzahl(s):
-    print("Anzahl: ",s)
 def Liste100Nachladen():
     print("Starte Nachladen noch programmieren")
     time.sleep(0.1)
@@ -558,6 +557,10 @@ def onenter(e):
     NameBild.config(text=name)
 def onleave(e):
     NameBild.config(text="")
+def BildAnzahl(s):
+    global twait
+    print("Twait: ",s,twait)
+    twait=int(s)
     
 #--------------------------------------------------------------#   
 # 
@@ -607,8 +610,8 @@ fr4=tkinter.Frame(HR)#, relief=RIDGE, borderwidth=12)
 fr4.pack(fill="x",expand=1)
 ButtLeft=tkinter.Button(fr4,text="<",width=10,height=1,command=lambda:Bild1Left(BildWerte,1))
 ButtLeft.pack(side="left")
-Regler=tkinter.Scale(fr4,from_=3.0,to=9.0,resolution=1,orient="horizontal",showvalue=1,width=10,sliderlength=10,length=400,command=BildAnzahl)
-Regler.pack(expand=1,fill="x",side="left")
+Regler=tkinter.Scale(fr4,from_=1.0,to=9.0,label="DiaShow Geschwindigkeit",resolution=1,orient="horizontal",showvalue=1,width=10,sliderlength=10,length=400,command=BildAnzahl)
+Regler.pack_forget()
 ButtRight=tkinter.Button(fr4,text=">",width=10,height=1,command=lambda:Bild1Right(BildWerte,1))
 ButtRight.pack(side="right")
 
@@ -692,6 +695,7 @@ tu=THRE,THREim
 Liste100=[]
 Liste100=[tu for i in range(0,9)]
 BildWerte=Glos()
+twait=1
 xx={}
 HR.iconbitmap() #SQLVerzeichnis+"icon.ico")
 imageTHRE=Image.open(THRE)
