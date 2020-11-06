@@ -470,7 +470,8 @@ def on_closing():
         AbortFile(gstrLogBuchName)     
 #Bilder                 #--------------------------------------------------------------#
 def InputImagePath(Dir):
-    ImageDir=filedialog.askdirectory( initialdir=Dir)
+
+    ImageDir=filedialog.askdirectory( initialdir=Dir,title = "Datenverzeichnis wählen")
     return ImageDir
 def ADD_path_file(p,f):
     Version=platte.platform()
@@ -627,6 +628,9 @@ fr1.pack(expand=1)
 #RadioButton
 ext=tkinter.StringVar()
 ext.set("jpg")
+#DirName=tkinter.Label(fr1,text="Datenpath",relief="sunken",anchor="w")
+#DirName.pack(expand=1,fill="x",pady=0,side="left")
+
 lb111=tkinter.Radiobutton(fr1,text="jpg",variable=ext,value="jpg",command=showDaten)
 lb111.pack(expand=1,fill="x",pady=0,side="left")
 lb112=tkinter.Radiobutton(fr1,text="mp4",variable=ext,value="mp4",command=showDaten)
@@ -642,13 +646,13 @@ fr2.pack(fill="x",expand=1)
 # 3.Zeile
 
 fr3=tkinter.Frame(HR)
-fr3.pack(fill="y",expand=1)
+fr3.pack(fill="y",expand=1,anchor="w")
 
 fr4=tkinter.Frame(HR)#, relief=RIDGE, borderwidth=12)
 fr4.pack(fill="x",expand=1)
 ButtLeft=tkinter.Button(fr4,text="<",width=10,height=1,command=lambda:Bild1Left(BildWerte,1))
 ButtLeft.pack(side="left")
-Regler=tkinter.Scale(fr4,from_=-8.0,to=+8.0,label="DiaShow Geschwindigkeit",resolution=1,orient="horizontal",showvalue=1,width=10,sliderlength=10,length=400,command=BildAnzahl)
+Regler=tkinter.Scale(fr4,from_=-8.0,to=+8.0,label="Dia Anzeigezeit",resolution=1,orient="horizontal",showvalue=1,width=10,sliderlength=10,length=400,command=BildAnzahl)
 Regler.pack_forget()
 ButtRight=tkinter.Button(fr4,text=">",width=10,height=1,command=lambda:Bild1Right(BildWerte,1))
 ButtRight.pack(side="right")
@@ -747,6 +751,7 @@ ian2=DBNumber_of_Records(gstrDatenBankName,"SETS")
 if ian2 ==0:
     DBStrukturAnlegen(gstrDatenBankName)
 lastpath,lastimagenr=DBReadSettings(gstrDatenBankName)
+#DirName["text"]=lastpath
 DATVerzeichnis=InputImagePath(lastpath)     
 print("DATVerzeichnis,lastpath: ",DATVerzeichnis,lastpath)
 DBWriteSettings(gstrDatenBankName,DATVerzeichnis,1)
