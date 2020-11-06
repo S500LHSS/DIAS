@@ -33,8 +33,6 @@ class FredFillSQL(threading.Thread):
         if NeuAnlage==True:
             cur.execute("DROP TABLE IF EXISTS DATEINAMEN;")
             cur.execute("CREATE TABLE DATEINAMEN(Id INTEGER PRIMARY KEY, Dateiname TEXT, PfadAbsolut TEXT, BildWert TEXT,Bild BLOB NOT NULL );")#,Bild50 BLOB NOT NULL
-            cur.execute("DROP TABLE IF EXISTS SETS;")
-            cur.execute("CREATE TABLE SETS(Id INTEGER PRIMARY KEY, Lastdb TEXT, LastImageNr TEXT);")
             con.commit()
             print("Neuanlage")
         bef="SELECT * FROM DATEINAMEN"
@@ -82,7 +80,7 @@ class FredFillSQL(threading.Thread):
         con.close()
         print(ian," Bilder eingelesen")
         print("Stopp Fred1:",FredId)
-        t2.start()   
+        #t2.start()   
         return ian
 class FredWerteNachtragen(threading.Thread):
     def __init__(self,datenbankname):
@@ -281,19 +279,18 @@ def DBOpen(datenbankname):
     con.commit()
     con.close()    
     SHOW_MESS("Dateibank geöffnet",gstrLogBuchName)
-    #SHOW_MESS("DatenBank geöffnet ("+datenbankname+")",gstrLogBuchName)
-def DBNumber_of_Records(datenbankname,TableName):
+def DBNumber_of_Records(datenbankname,tablename):
     ian=0
     try:
         con = None
         con = lite.connect(datenbankname)
         cur = con.cursor()
-        bef="SELECT * FROM "+TableName+ " ORDER BY Id DESC LIMIT 1"
+        bef="SELECT * FROM "+tablename+ " ORDER BY Id DESC LIMIT 1"
         ian = cur.execute(bef).fetchone()
         ret=ian[0]
     except:
         ret=0
-        SHOW_MESS("Dateibank geöffnet, aber leer",gstrLogBuchName)
+        SHOW_MESS("Error in " +datenbankname+","+tablename,gstrLogBuchName)
     cur.close()    
     return ret    
 def DBStrukturAnlegen(datenbankname):
@@ -306,31 +303,39 @@ def DBStrukturAnlegen(datenbankname):
         cur.execute("CREATE TABLE DATEINAMEN(Id INTEGER PRIMARY KEY, Dateiname TEXT, PfadAbsolut TEXT, BildWert TEXT,Bild BLOB NOT NULL );")#,Bild50 BLOB NOT NULL
         
         cur.execute("DROP TABLE IF EXISTS SETS;")
-        cur.execute("CREATE TABLE SETS(Id INTEGER PRIMARY KEY, Lastdb TEXT, LastImageNr TEXT);")
-        cur.commit()
-        print("Neuanlage")
+        cur.execute("CREATE TABLE SETS(Id INTEGER PRIMARY KEY, Lastpath TEXT, LastImageNr TEXT);")
+        lastpath=""
+        lastimagenr=1
+        cur.execute("INSERT INTO SETS (Lastpath, LastImageNr) VALUES (?, ?)",(lastpath,lastimagenr))
+        con.commit()
         ret=ian
     except:
         ret=0
         SHOW_MESS("Dateibank geöffnet, aber leer",gstrLogBuchName)
     cur.close()    
     return ret        
-def DBWriteSettings(datenbankname,lastdb):
+def DBWriteSettings(datenbankname,lastpath,lastimagenr):
     con = None
     con = lite.connect(datenbankname)
     cur = con.cursor()
-    #cur.execute("SELECT * FROM SETS")
-    lastdb=lastdb
-    cur.execute("INSERT INTO SETS (Lastdb ,LastImageNr) VALUES (?,?)",(lastdb,"12!"))
+    cur.execute("SELECT * FROM SETS")
+    bef="UPDATE SETS SET Lastpath = '"+ lastpath +"' WHERE Id ="+str(1)
+    cur.execute(bef)
     con.commit()
+    return
 def DBReadSettings(datenbankname):
     con = None
     con = lite.connect(datenbankname)
     cur = con.cursor()
     bef="SELECT * FROM SETS"
     cur.execute(bef)
-    zeile = cur.fetchall()  
-    return zeile
+    zeile = cur.fetchall() 
+    if len(zeile)==0:
+        tup="",0
+    else:
+        z=zeile[0] 
+        tup=z[1],z[2]
+    return tup
 def DBFuellen(datenbankname,DATVerzeichnis,maxFiles):
     datenbankname = datenbankname
     NeuAnlage=True
@@ -712,11 +717,11 @@ print("Programm:{} / {}".format(path, filename))
 SQLVerzeichnis=path 
 #os.chdir("..") 
 
-DATVerzeichnis=InputImagePath(path)                          
+                         
 Version=platte.platform()
 print("OS-Version: "+Version)
 print("SQLVerzeichnis: ",SQLVerzeichnis)
-print("DATVerzeichnis: ",DATVerzeichnis)
+
 
 gstrDatenBankName=ADD_path_file(SQLVerzeichnis,"Dateishow.db")
 gstrLogBuchName=ADD_path_file(SQLVerzeichnis,"Dateishow.log")
@@ -739,30 +744,30 @@ DBOpen(gstrDatenBankName)
 print("Datenbank: ",gstrDatenBankName)
 ian1=DBNumber_of_Records(gstrDatenBankName,"DATEINAMEN")
 ian2=DBNumber_of_Records(gstrDatenBankName,"SETS")
-if ian1 or ian2 ==0:
+if ian2 ==0:
     DBStrukturAnlegen(gstrDatenBankName)
-lastdb=DBReadSettings(gstrDatenBankName)
-#if len(lastdb)==0:
-#    DBWriteSettings(gstrDatenBankName,DATVerzeichnis)
+lastpath,lastimagenr=DBReadSettings(gstrDatenBankName)
+DATVerzeichnis=InputImagePath(lastpath)     
+print("DATVerzeichnis,lastpath: ",DATVerzeichnis,lastpath)
+DBWriteSettings(gstrDatenBankName,DATVerzeichnis,1)
 t1=FredFillSQL(gstrDatenBankName,5000)
 t2=FredWerteNachtragen(gstrDatenBankName)
 t3=Dias(0)
 
 # DB fuellen in Thread T1 
 # Liste100 füllen in GetBilder
-
-if ian<100:
-   # Datenbank neu füllen 
-    NeuAnlage=True
-    t1.start()    
-elif ian< 5000:
+if lastpath==DATVerzeichnis:
     # Datenbank weiter füllen
     NeuAnlage=False
     t1.start()
 else:
+   # Datenbank neu füllen 
+    NeuAnlage=True
+    t1.start()    
+time.sleep(5)    
+if ian1 < 5000:
     # Datenbank gefüllt BildWerte nachträglich in DB eintragen
     t2.start()
-time.sleep(5)    
 GetBilder(gstrDatenBankName,1,50)
 AnzeigeListe=[i for i in range(0,9)]
 xxl=BildaufCanvas(fr3,500,"",imageTHRE,1)
