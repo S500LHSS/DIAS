@@ -462,16 +462,21 @@ def LogSave(strCode,intID,strText,gstrLogBuchName):
     gstrLogBuch.write(strLogSatz)
     gstrLogBuch.close()
 def on_closing():
-    global globDatenVorhanden
-    if globDatenVorhanden: 
-        if messagebox.askokcancel("Quit", "Ohne Speichern das Programm verlassen?"):
-            AbortFile(gstrLogBuchName)
+    if messagebox.askokcancel("Quit", "Ohne Speichern das Programm verlassen?"):
+        AbortFile(gstrLogBuchName)
     else:
         AbortFile(gstrLogBuchName)     
 #Bilder                 #--------------------------------------------------------------#
 def InputImagePath(Dir):
-
+    #ImageDir=Dir
+    NameDat=tkinter.Label(fr5,text=Dir,height=20,width=50,bg="yellow",relief="sunken")
+    NameDat.pack(side="left")
+    #NameABSBut=tkinter.Button(fr5,text="",height=3,width=3,bg="grey")
+    #NameABSBut.pack(side="left")
+    #NameBut=tkinter.Button(fr5,text="Auswahl des Bild-Verzeichnisses",height=3,width=10,bg="yellow")
+    #NameBut.pack(fill="y",expand=1,anchor="w")
     ImageDir=filedialog.askdirectory( initialdir=Dir,title = "Datenverzeichnis wählen")
+    NameDat.pack_forget()
     return ImageDir
 def ADD_path_file(p,f):
     Version=platte.platform()
@@ -719,6 +724,7 @@ absFilePath = os.path.abspath(__file__)
 path, filename = os.path.split(absFilePath)
 print("Programm:{} / {}".format(path, filename))
 SQLVerzeichnis=path 
+DATVerzeichnis=path     #vorsichtshalber
 #os.chdir("..") 
 
                          
@@ -773,7 +779,7 @@ time.sleep(5)
 if ian1 < 5000:
     # Datenbank gefüllt BildWerte nachträglich in DB eintragen
     t2.start()
-GetBilder(gstrDatenBankName,1,50)
+GetBilder(gstrDatenBankName,1,500)
 AnzeigeListe=[i for i in range(0,9)]
 xxl=BildaufCanvas(fr3,500,"",imageTHRE,1)
 ra=("b0","b1","b2","b3","b4","b5","b6","b7","b8","b9")
@@ -786,6 +792,7 @@ BildWerte.setfirst=(0)
 BildWerte.setlast=(9)
 
 xxlPointer=BildWerte.getpointer()
+#DATVerzeichnis=InputImagePath(lastpath)     
 ShowBilder(AnzeigeListe)
 HR.mainloop()
 #done
