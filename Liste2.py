@@ -469,14 +469,14 @@ def on_closing():
 #Bilder                 #--------------------------------------------------------------#
 def InputImagePath(Dir):
     #ImageDir=Dir
-    NameDat=tkinter.Label(fr5,text=Dir,height=20,width=50,bg="yellow",relief="sunken")
-    NameDat.pack(side="left")
+    #NameDat=tkinter.Label(fr5,text=Dir,height=20,width=50,bg="yellow",relief="sunken")
+    #NameDat.pack(side="left")
     #NameABSBut=tkinter.Button(fr5,text="",height=3,width=3,bg="grey")
     #NameABSBut.pack(side="left")
     #NameBut=tkinter.Button(fr5,text="Auswahl des Bild-Verzeichnisses",height=3,width=10,bg="yellow")
     #NameBut.pack(fill="y",expand=1,anchor="w")
     ImageDir=filedialog.askdirectory( initialdir=Dir,title = "Datenverzeichnis wählen")
-    NameDat.pack_forget()
+    #NameDat.pack_forget()
     return ImageDir
 def ADD_path_file(p,f):
     Version=platte.platform()
@@ -613,7 +613,7 @@ def BildAnzahl(s):
 
 HR = tkinter.Tk()
 HR.title("Übungsprogramm")
-
+la={}
 # auf schliessen des Hauptfensterns vorbereitet sein
 HR.protocol("WM_DELETE_WINDOW", on_closing)
 fr=tkinter.Frame(HR,height=20,width=600,bg="#FFFFFF",bd=10) 
@@ -634,7 +634,12 @@ fr1.pack(expand=1)
 ext=tkinter.StringVar()
 ext.set("jpg")
 #DirName=tkinter.Label(fr1,text="Datenpath",relief="sunken",anchor="w")
-#DirName.pack(expand=1,fill="x",pady=0,side="left")
+#DirName.pack(expand=1,padx=0,side="left",)
+#DirName.pack(expand=1,padx=0,side="left",)
+la=("ll0","ll1","ll2")
+for i in (la):
+    i = tkinter.Label(fr1,  text="1234",font=('times', 20, 'bold'), bg='green',relief="sunken",borderwidth=12)
+    i.pack(side="left",padx=15,)
 
 lb111=tkinter.Radiobutton(fr1,text="jpg",variable=ext,value="jpg",command=showDaten)
 lb111.pack(expand=1,fill="x",pady=0,side="left")
@@ -642,6 +647,10 @@ lb112=tkinter.Radiobutton(fr1,text="mp4",variable=ext,value="mp4",command=showDa
 lb112.pack(expand=1,fill="x",pady=0,side="left")
 lb113=tkinter.Radiobutton(fr1,text="txt",variable=ext,value="txt",command=showDaten)
 lb113.pack(expand=1,fill="x",pady=0,side="left")
+la=("lr0","lr1","lr2")
+for i in (la):
+    i = tkinter.Label(fr1,  text="1234",font=('times', 20, 'bold'), bg='green',relief="sunken",borderwidth=12)
+    i.pack(side="right",padx=15)
 
 # 2.Zeile
 
@@ -651,7 +660,7 @@ fr2.pack(fill="x",expand=1)
 # 3.Zeile
 
 fr3=tkinter.Frame(HR)
-fr3.pack(fill="y",expand=1,anchor="w")
+fr3.pack(fill="y",expand=1)
 
 fr4=tkinter.Frame(HR)#, relief=RIDGE, borderwidth=12)
 fr4.pack(fill="x",expand=1)
@@ -664,7 +673,7 @@ ButtRight.pack(side="right")
 
 # 4.Zeile 
 fr5=tkinter.Frame(HR)#, relief=RIDGE, borderwidth=12)
-fr5.pack(fill="x",expand=1)
+fr5.pack()
 
 # Zeile für Ausgaben
 # Mitteilungen unten
@@ -746,6 +755,7 @@ BildWerte=Glos()
 Dia_time=3
 Dia_richtung="+"
 xx={}
+
 HR.iconbitmap() #SQLVerzeichnis+"icon.ico")
 imageTHRE=Image.open(THRE)
 OpenLogBuch(gstrLogBuchName)
